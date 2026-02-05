@@ -1,4 +1,5 @@
 using MvcNetCoreLinqToSqlInjection.Models;
+using MvcNetCoreLinqToSqlInjection.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ car.VelocidadMaxima = 200;
 builder.Services.AddSingleton<ICoche, Coche>(x => car);
 //builder.Services.AddSingleton<ICoche, Coche>();
 
+//RepositoryDoctoresSQLServer repo = new RepositoryDoctoresSQLServer();
+builder.Services.AddTransient<RepositoryDoctoresSQLServer>();
 
 var app = builder.Build();
 

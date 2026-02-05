@@ -12,7 +12,7 @@ namespace MvcNetCoreLinqToSqlInjection.Repositories
 
         public RepositoryDoctoresSQLServer()
         {
-            string connectionString = @"";
+            string connectionString = @"Data Source=LOCALHOST\DEVELOPER;Initial Catalog=HOSPITAL;Persist Security Info=True;User ID=SA;Encrypt=True;TrustServerCertificate=True";
             this.cn = new SqlConnection(connectionString);
             this.com = new SqlCommand();
             this.com.Connection = this.cn;
