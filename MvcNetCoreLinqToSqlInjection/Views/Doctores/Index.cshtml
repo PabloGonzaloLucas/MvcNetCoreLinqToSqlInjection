@@ -8,6 +8,8 @@
         <th>Especialidad</th>
         <th>Salario</th>
         <th>Hospital</th>
+        <th></th>
+        <th></th>
     </thead>
     <tbody>
         @if(Model != null)
@@ -20,6 +22,16 @@
                     <td>@doctor.Especialidad</td>
                     <td>@doctor.Salario</td>
                     <td>@doctor.IdHospital</td>
+                    <td>
+                        <a asp-action="Delete" asp-controller="Doctores" asp-route-iddoctor="@doctor.IdDoctor" class="btn btn-danger">
+                            Delete
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-action="Update" asp-controller="Doctores" asp-route-idDoctor="@doctor.IdDoctor" class="btn btn-info">
+                            Update
+                        </a>
+                    </td>
                 </tr>
             }
         }

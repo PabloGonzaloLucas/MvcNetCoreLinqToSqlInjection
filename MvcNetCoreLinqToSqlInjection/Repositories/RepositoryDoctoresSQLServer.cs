@@ -2,9 +2,28 @@
 using MvcNetCoreLinqToSqlInjection.Models;
 using System.Data;
 
+#region Procedures
+//create procedure SP_DELETE_DOCTOR
+//(@iddoctor int)
+//as
+//	delete FROM DOCTOR where DOCTOR_NO = @iddoctor
+//go
+
+//alter procedure SP_UPDATE_DOCTOR
+//(@id int, @idHospital int, @apellido nvarchar(50), @especialidad nvarchar(50), @salario int)
+//as
+//	update DOCTOR set HOSPITAL_COD = @idHospital, APELLIDO = @apellido, ESPECIALIDAD = @especialidad, SALARIO = @salario
+//	where DOCTOR_NO = @id;
+//go
+
+
+
+#endregion
+
+
 namespace MvcNetCoreLinqToSqlInjection.Repositories
 {
-    public class RepositoryDoctoresSQLServer
+    public class RepositoryDoctoresSQLServer : IRepositoryDoctores
     {
         private SqlConnection cn;
         private SqlCommand com;
@@ -43,6 +62,22 @@ namespace MvcNetCoreLinqToSqlInjection.Repositories
             }
             return doctores;
         }
+        public Doctor FindDoctor(int idDoctor)
+        {
+            var consulta = from datos in this.tablaDoctor.AsEnumerable()
+                           where datos.Field<int>("DOCTOR_NO") == idDoctor
+                           select datos;
+            var row = consulta.First();
+            Doctor doc = new Doctor
+            {
+                IdDoctor = row.Field<int>("DOCTOR_NO"),
+                Apellido = row.Field<string>("APELLIDO"),
+                Especialidad = row.Field<string>("ESPECIALIDAD"),
+                Salario = row.Field<int>("SALARIO"),
+                IdHospital = row.Field<int>("HOSPITAL_COD")
+            };
+            return doc;
+        }
 
         public async Task CreateDoctorAsync(int idDoctor, string apellido, string especialidad, int salario, int idHospital)
         {
@@ -61,9 +96,8 @@ namespace MvcNetCoreLinqToSqlInjection.Repositories
         }
         public async Task UpdateDoctorAsync(int idDoctor, string apellido, string especialidad, int salario, int idHospital)
         {
-            string sql = "update DOCTOR set HOSPITAL_COD = @idHospital , APELLIDO = @apellido, ESPECIALIDAD = @especialidad, SALARIO = @salario " +
-                "where DOCTOR_NO = @id)";
-            this.com.CommandType = CommandType.Text;
+            string sql = "SP_UPDATE_DOCTOR";
+            this.com.CommandType = CommandType.StoredProcedure;
             this.com.CommandText = sql;
             this.com.Parameters.AddWithValue("@id", idDoctor);
             this.com.Parameters.AddWithValue("@idHospital", idHospital);
@@ -76,5 +110,17 @@ namespace MvcNetCoreLinqToSqlInjection.Repositories
             this.com.Parameters.Clear();
         }
 
+        public async Task DeleteDoctorAsync(int idDoctor)
+        {
+            string sql = "SP_DELETE_DOCTOR";
+            this.com.Parameters.AddWithValue("@iddoctor", idDoctor);
+            this.com.CommandText = sql;
+            this.com.CommandType = CommandType.StoredProcedure;
+            await this.cn.OpenAsync();
+            await this.com.ExecuteNonQueryAsync();
+            await this.cn.CloseAsync();
+            this.com.Parameters.Clear();
+
+        }
     }
 }

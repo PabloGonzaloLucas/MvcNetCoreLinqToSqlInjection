@@ -6,9 +6,9 @@ namespace MvcNetCoreLinqToSqlInjection.Controllers
 {
     public class DoctoresController : Controller
     {
-        private RepositoryDoctoresSQLServer repo;
+        private IRepositoryDoctores repo;
 
-        public DoctoresController(RepositoryDoctoresSQLServer repo)
+        public DoctoresController(IRepositoryDoctores repo)
         {
             this.repo = repo;
         }
@@ -27,6 +27,24 @@ namespace MvcNetCoreLinqToSqlInjection.Controllers
         public async Task<IActionResult> Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(Doctor doc)
+        {
+            await this.repo.UpdateDoctorAsync(doc.IdDoctor, doc.Apellido, doc.Especialidad, doc.Salario, doc.IdHospital);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> Update(int idDoctor)
+        {
+            Doctor doc = this.repo.FindDoctor(idDoctor);
+            return View(doc);
+        }
+
+        public async Task<IActionResult> Delete(int iddoctor)
+        {
+            await this.repo.DeleteDoctorAsync(iddoctor);
+            return RedirectToAction("Index");
         }
     }
 }
